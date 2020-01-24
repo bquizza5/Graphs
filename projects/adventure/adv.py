@@ -123,17 +123,19 @@ while len(visited_rooms) != len(room_graph):
 
     #add all unexplored neighbors to unvisited
     if player.current_room not in visited_rooms:
-        if 'n' in graph[player.current_room.id] and graph[player.current_room.id]['n'] == '?':    
-            unvisited.push((player.current_room.id, 'n'))
-        
+
         if 'e' in graph[player.current_room.id] and graph[player.current_room.id]['e'] == '?':    
             unvisited.push((player.current_room.id, 'e'))
+
+        if 'n' in graph[player.current_room.id] and graph[player.current_room.id]['n'] == '?':    
+            unvisited.push((player.current_room.id, 'n'))
+
+        if 'w' in graph[player.current_room.id] and graph[player.current_room.id]['w'] == '?':    
+            unvisited.push((player.current_room.id, 'w'))
 
         if 's' in graph[player.current_room.id] and graph[player.current_room.id]['s'] == '?':    
             unvisited.push((player.current_room.id, 's'))
 
-        if 'w' in graph[player.current_room.id] and graph[player.current_room.id]['w'] == '?':    
-            unvisited.push((player.current_room.id, 'w'))
 
 
     visited_rooms.add(player.current_room)
