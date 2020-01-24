@@ -56,7 +56,6 @@ player.current_room = world.starting_room
 graph = {}
 
 def find_fastest_path(current_room, next_room):
-    old_current_room = current_room
     visited = {}
 
     # Create an empty queue and enqueue the starting vertex ID
@@ -79,7 +78,7 @@ def find_fastest_path(current_room, next_room):
                     new_path = path.copy()
                     new_path.append(graph[current_room][direction])
                     q.enqueue(new_path)
-    print('##path##',old_current_room, next_room, visited[next_room])
+
 
     return visited[next_room]
     
@@ -115,8 +114,12 @@ while len(visited_rooms) != len(room_graph):
 
             else:
                 graph[player.current_room.id][direction] = '?'
-    print('graph', graph)
-    print('stack', unvisited.stack)
+    else:
+        # change unknown direction in last room to this room
+        graph[last_room[0]][reverse_direction(last_room[1])] = player.current_room.id
+        #change unknown direction in this room to last room
+        graph[player.current_room.id][last_room[1]] = last_room[0]
+
 
     #add all unexplored neighbors to unvisited
     if player.current_room not in visited_rooms:
@@ -131,6 +134,7 @@ while len(visited_rooms) != len(room_graph):
 
         if 'w' in graph[player.current_room.id] and graph[player.current_room.id]['w'] == '?':    
             unvisited.push((player.current_room.id, 'w'))
+
 
     visited_rooms.add(player.current_room)
     next_room = unvisited.pop()
@@ -151,39 +155,38 @@ while len(visited_rooms) != len(room_graph):
         player.travel(next_room[1])
         traversal_path.append(next_room[1])
     else:
-        print('***not in the right room***')
+        # print('***not in the right room***')
         # find the fastest path back to that room and then travel there.
         #and then: player.travel(next_room[1])
         fastest_path = find_fastest_path(player.current_room.id, next_room[0])[1:]
         
         for room in fastest_path:
-            print('test',player.current_room.id)
-            print('test',graph)
+
             # print('fastest',fastest_path, graph[player.current_room.id])
             if 'n' in graph[player.current_room.id] and graph[player.current_room.id]['n'] == room:
-                print('moved north')
-                print(player.current_room.id)
+                last_room[0] = player.current_room.id
+                last_room[1] = reverse_direction('n')
                 player.travel('n')
-                print(player.current_room.id)
                 traversal_path.append('n')
+
             elif 'e' in graph[player.current_room.id] and graph[player.current_room.id]['e'] == room:
-                print('moved east')
-                print(player.current_room.id)
+                last_room[0] = player.current_room.id
+                last_room[1] = reverse_direction('e')
                 player.travel('e')
-                print(player.current_room.id)
                 traversal_path.append('e')
+
             elif 's' in graph[player.current_room.id] and graph[player.current_room.id]['s'] == room:
-                print('moved south')
-                print(player.current_room.id)
+                last_room[0] = player.current_room.id
+                last_room[1] = reverse_direction('s')
                 player.travel('s')
-                print(player.current_room.id)
                 traversal_path.append('s')
+
             elif 'w' in graph[player.current_room.id] and graph[player.current_room.id]['w'] == room:
-                print('moved west')
-                print(player.current_room.id)
+                last_room[0] = player.current_room.id
+                last_room[1] = reverse_direction('w')
                 player.travel('w')
-                print(player.current_room.id)
                 traversal_path.append('w')
+
             else:
                 print('error line 162', room)
                 break
@@ -209,3 +212,6 @@ if len(visited_rooms) == len(room_graph):
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
+
+# for i in range(len(room_graph)):
+#     print(i, graph[i])
